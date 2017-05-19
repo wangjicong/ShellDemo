@@ -1,0 +1,53 @@
+mygetsrc()
+{
+	list=""
+	if [ $# -ne 0 ]
+	then
+	while [ $# -ne 0 ]
+	do
+		tmp=$1
+		tmp=${tmp%*/}
+		svn --force export ${root}/${tmp} -r $numb ./${tmp}/ | tee ./.log/all/${tmp}"".log
+		if grep -q 完成导出 ./.log/all/${tmp}"".log || grep -q 已导出版本 ./.log/all/${tmp}"".log 
+		then
+			echo 已导出${tmp}>>.log/succ_list.log
+		else
+			echo 导出失败${tmp}>>.log/fail_list.log
+			list=$list" "${tmp}
+		fi
+		shift
+	done
+	echo "
+已导出文件">>./.log/succ_list.log
+	echo "
+导出失败文件">>./.log/fail_list.log
+	mygetsrc $list
+	fi
+}
+path=$(../.tools/getpath ../.tools/path.ini)
+name=$(../.tools/getname ../.tools/path.ini)
+root=${path}/${name}
+numb=$(../.tools/getnum ${path} ${name})
+if (( $1 > 0 ))
+then 
+    numb=$1
+fi
+echo "you will get "$numb
+sleep 1
+
+filelist=$(../.tools/getlist ${path} ${name})
+rm -rf .log
+mkdir .log
+mkdir .log/all
+date > ./.log/time.txt
+echo 已导出文件>./.log/succ_list.log
+echo 导出失败文件>./.log/fail_list.log
+echo 已导出文件" "$numb.>./.log/get.log
+mygetsrc $filelist
+echo 已导出文件" "$numb>./.log/get.log
+echo $numb
+echo $root
+echo $path
+echo $name
+date >> ./.log/time.txt
+

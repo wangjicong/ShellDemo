@@ -1,0 +1,31 @@
+#!/bin/bash
+clear
+echo -e "\t\t\t\tsource id\n"
+i=0
+for file in ./*
+do
+	if test -f $file/.log/get.log
+	then
+		if test -d $file
+		then
+			s=$( cat "$file/.log/get.log" )
+			s=${s##* }
+			b=${file##*/}
+			a="\t$i\t\t$b\t\t\t$s"
+			echo -e $a
+			echo $i>$file/.log/id.log
+			let " i = $i + 1 "
+		fi
+	fi
+done
+if test -f ./.log/get.log
+then
+	s=$( cat "./.log/get.log" )
+	s=${s##* }
+	a="\t\t.\t\t\t$s"
+	echo -e $a
+fi
+for i in {1, 2 ,3}
+do
+	echo ""
+done
